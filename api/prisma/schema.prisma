@@ -1,0 +1,60 @@
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model representing application users
+model User {
+  id            String      @id @default(uuid())
+  username      String      @unique
+  password      String
+  email         String      @unique
+  avatar        String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  // One-to-many relationship: One user can have multiple teams
+  teams         Team[]
+}
+
+// Admin model representing application administrators
+model Admin {
+  id            String      @id @default(uuid())
+  username      String      @unique
+  password      String
+  email         String      @unique
+  role          String      @default("admin") // Define roles (e.g., "admin", "superadmin")
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+// Game model representing games in the application
+model Game {
+  id          String      @id @default(uuid())
+  category    String
+  name        String
+  description String
+  image       String?      @default("/default-game-image.jpg") // Default image path
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// Team model representing teams created by users
+model Team {
+  id                  String       @id @default(uuid())
+  name                String
+  numberOfPlayers     Int
+  games               String
+  description         String
+  availableDaysAndTimes String
+  approved            Boolean     @default(false) // Indicates team approval status
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+  // Many-to-one relationship: Many teams can belong to one user (creator)
+  creator             User         @relation(fields: [creatorId], references: [id])
+  creatorId           String
+}
