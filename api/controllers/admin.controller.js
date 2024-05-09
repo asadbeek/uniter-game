@@ -2,10 +2,35 @@ import prisma from "../lib/prisma.js";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
+import bcrypt from "bcrypt";
 
-// Create a new game with image upload
+export const createAdmin = async (req, res) => {
+  const adminUsername = "admin";
+  const adminPassword = "1234";
+  const adminRole = "admin"; // Default role for admin users
+
+  try {
+    const hashedAdminPassword = await bcrypt.hash(adminPassword, 10);
+
+    const adminUser = await prisma.admin.create({
+      data: {
+        username: adminUsername,
+        password: hashedAdminPassword,
+        role: adminRole,
+      },
+    });
+
+    res
+      .status(201)
+      .json({ message: "Admin user created successfully", adminUser });
+  } catch (error) {
+    console.error("Error creating admin user:", error);
+    res.status(500).json({ error: "Failed to create admin user" });
+  }
+};
+
 export const createGame = async (req, res) => {
-  const { category, name, description } = req.body;
+  const { category, name, description, creatorId } = req.body;
   const { file } = req; // Assuming 'file' is the uploaded image file
 
   try {
@@ -29,7 +54,8 @@ export const createGame = async (req, res) => {
         category,
         name,
         description,
-        image: imagePath, // Save the image path in the database
+        image: imagePath,
+        creatorId,
       },
     });
 
@@ -38,7 +64,7 @@ export const createGame = async (req, res) => {
       .json({ message: "Game created successfully", game: newGame });
   } catch (error) {
     console.error("Error creating game:", error);
-    res.status(500).json({ error: "Failed to create game" });
+    res.status(500).json({ error: `Failed to create game: ${error.message}` });
   }
 };
 

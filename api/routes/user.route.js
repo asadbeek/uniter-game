@@ -16,9 +16,9 @@ router.delete("/delete/:id", deleteUser);
 router.post("/teams", createTeam);
 
 // Route for updating an existing team
-router.put("/teams/:id", updateTeam);
+router.put("/teamsUpdate/:id", updateTeam);
 
 // Route for deleting a team
-router.delete("/teams/:id", deleteTeam);
+router.delete("/teamsDelete/:id", deleteTeam);
 
 export default router;

@@ -18,7 +18,7 @@ model User {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   // One-to-many relationship: One user can have multiple teams
-  teams         Team[]
+  teams         Team[]      @relation("team_creator")
 }
 
 // Admin model representing application administrators
@@ -26,10 +26,14 @@ model Admin {
   id            String      @id @default(uuid())
   username      String      @unique
   password      String
-  email         String      @unique
   role          String      @default("admin") // Define roles (e.g., "admin", "superadmin")
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
+  games         Game[]      @relation("game_creator")
+
+  // Define a relation to approved teams
+  approvedTeams Team[]      @relation("approved_teams")
 }
 
 // Game model representing games in the application
@@ -41,6 +45,9 @@ model Game {
   image       String?      @default("/default-game-image.jpg") // Default image path
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
+
+  creator     Admin        @relation("game_creator", fields: [creatorId], references: [id])
+  creatorId   String
 }
 
 // Team model representing teams created by users
@@ -55,6 +62,10 @@ model Team {
   createdAt           DateTime     @default(now())
   updatedAt           DateTime     @updatedAt
   // Many-to-one relationship: Many teams can belong to one user (creator)
-  creator             User         @relation(fields: [creatorId], references: [id])
+  creator             User         @relation("team_creator", fields: [creatorId], references: [id])
   creatorId           String
+
+  // Define a relation to the approving admin
+  approvedBy          Admin?       @relation("approved_teams", fields: [approvedById], references: [id])
+  approvedById        String?      // Foreign key to Admin who approved the team
 }

@@ -65,9 +65,11 @@ export const deleteUser = async (req, res) => {
 };
 
 // Create a new team
+
 export const createTeam = async (req, res) => {
   const { name, numberOfPlayers, games, description, availableDaysAndTimes } =
     req.body;
+  const { userId } = req; // Assuming 'userId' is extracted from authentication middleware
 
   try {
     const newTeam = await prisma.team.create({
@@ -77,6 +79,7 @@ export const createTeam = async (req, res) => {
         games,
         description,
         availableDaysAndTimes,
+        creator: { connect: { id: "a4d14d4f-8b83-4368-adc9-4944185ee21f" } }, // Connect the team to the user (creator)
       },
     });
 
@@ -85,7 +88,7 @@ export const createTeam = async (req, res) => {
       .json({ message: "Team created successfully", team: newTeam });
   } catch (error) {
     console.error("Error creating team:", error);
-    res.status(500).json({ error: "Failed to create team" });
+    res.status(500).json({ error: `Failed to create team: ${error.message}` });
   }
 };
 
