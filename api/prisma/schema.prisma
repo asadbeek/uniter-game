@@ -53,6 +53,7 @@ model Game {
 // Team model representing teams created by users
 model Team {
   id                  String       @id @default(uuid())
+  category            String
   name                String
   numberOfPlayers     Int
   games               String

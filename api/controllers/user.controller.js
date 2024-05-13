@@ -1,6 +1,38 @@
 import bcrypt from "bcrypt";
 import prisma from "../lib/prisma.js";
 
+export const getTeamById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Use Prisma to team the user with the specified ID
+    const team = await prisma.team.findUniqueOrThrow({
+      where: { id },
+    });
+
+    res.status(200).json({
+      team,
+    });
+  } catch (error) {
+    console.error("Error team user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getTeams = async (req, res) => {
+  try {
+    // Use Prisma to team the user with the specified ID
+    const teams = await prisma.team.findMany();
+
+    res.status(200).json({
+      teams,
+    });
+  } catch (error) {
+    console.error("Error teams user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   const { username, password } = req.body;
@@ -67,19 +99,26 @@ export const deleteUser = async (req, res) => {
 // Create a new team
 
 export const createTeam = async (req, res) => {
-  const { name, numberOfPlayers, games, description, availableDaysAndTimes } =
-    req.body;
-  const { userId } = req; // Assuming 'userId' is extracted from authentication middleware
+  const {
+    category,
+    name,
+    numberOfPlayers,
+    games,
+    description,
+    availableDaysAndTimes,
+  } = req.body;
+  const { userId } = req.params; // Assuming 'userId' is extracted from authentication middleware
 
   try {
     const newTeam = await prisma.team.create({
       data: {
+        category,
         name,
         numberOfPlayers,
         games,
         description,
         availableDaysAndTimes,
-        creator: { connect: { id: "a4d14d4f-8b83-4368-adc9-4944185ee21f" } }, // Connect the team to the user (creator)
+        creator: { connect: { id: userId } }, // Connect the team to the user (creator)
       },
     });
 

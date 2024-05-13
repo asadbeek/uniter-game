@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 
 export const createAdmin = async (req, res) => {
   const adminUsername = "admin";
-  const adminPassword = "1234";
+  const adminPassword = "12345";
   const adminRole = "admin"; // Default role for admin users
 
   try {
