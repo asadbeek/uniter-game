@@ -2,6 +2,38 @@ import prisma from "../lib/prisma.js";
 
 // Create a new team
 
+export const getTeamById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Use Prisma to team the user with the specified ID
+    const team = await prisma.team.findUniqueOrThrow({
+      where: { id },
+    });
+
+    res.status(200).json({
+      team,
+    });
+  } catch (error) {
+    console.error("Error team user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const getTeams = async (req, res) => {
+  try {
+    // Use Prisma to team the user with the specified ID
+    const teams = await prisma.team.findMany();
+
+    res.status(200).json({
+      teams,
+    });
+  } catch (error) {
+    console.error("Error teams user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
 export const createTeam = async (req, res) => {
   const {
     category,
@@ -79,38 +111,6 @@ export const deleteTeam = async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting team:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-export const getTeamById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // Use Prisma to team the user with the specified ID
-    const team = await prisma.team.findUniqueOrThrow({
-      where: { id },
-    });
-
-    res.status(200).json({
-      team,
-    });
-  } catch (error) {
-    console.error("Error team user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
-export const getTeams = async (req, res) => {
-  try {
-    // Use Prisma to team the user with the specified ID
-    const teams = await prisma.team.findMany();
-
-    res.status(200).json({
-      teams,
-    });
-  } catch (error) {
-    console.error("Error teams user:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };
