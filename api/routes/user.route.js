@@ -1,28 +1,17 @@
 import express from "express";
 import {
-  createTeam,
-  updateTeam,
-  deleteTeam,
   deleteUser,
   updateUser,
-  getTeamById,
-  getTeams,
+  getUser,
+  getUsers,
 } from "../controllers/user.controller.js";
+import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.put("/update/:id", updateUser);
-router.delete("/delete/:id", deleteUser);
-
-// Route for creating a new team
-router.post("/team/:userId", createTeam);
-router.get("/team/:id", getTeamById);
-router.get("/teams", getTeams);
-
-// Route for updating an existing team
-router.put("/teamsUpdate/:id", updateTeam);
-
-// Route for deleting a team
-router.delete("/teamsDelete/:id", deleteTeam);
+router.get("/", getUsers);
+router.get("/:id", verifyToken, getUser);
+router.put("/update/:id", verifyToken, updateUser);
+router.delete("/delete/:id", verifyToken, deleteUser);
 
 export default router;
