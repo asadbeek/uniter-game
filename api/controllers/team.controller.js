@@ -38,8 +38,8 @@ export const createTeam = async (req, res) => {
   const {
     category,
     name,
+    img,
     numberOfPlayers,
-    games,
     description,
     availableDaysAndTimes,
   } = req.body;
@@ -50,8 +50,8 @@ export const createTeam = async (req, res) => {
       data: {
         category,
         name,
+        img,
         numberOfPlayers,
-        games,
         description,
         availableDaysAndTimes,
         creator: { connect: { id: userId } }, // Connect the team to the user (creator)
@@ -70,7 +70,7 @@ export const createTeam = async (req, res) => {
 // Update team details
 export const updateTeam = async (req, res) => {
   const { id } = req.params;
-  const { name, numberOfPlayers, games, description, availableDaysAndTimes } =
+  const { name, img, numberOfPlayers, description, availableDaysAndTimes } =
     req.body;
 
   try {
@@ -78,8 +78,8 @@ export const updateTeam = async (req, res) => {
       where: { id },
       data: {
         name,
+        img,
         numberOfPlayers,
-        games,
         description,
         availableDaysAndTimes,
       },
