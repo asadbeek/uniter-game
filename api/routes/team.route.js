@@ -12,10 +12,10 @@ const router = express.Router();
 
 router.get("/", getTeams);
 router.get("/:id", getTeamById);
-router.post("/", verifyToken, createTeam);
+router.post("/:userId", createTeam);
 
 // Route for updating and deleting a team
-router.put("/:id", verifyToken, updateTeam);
-router.delete("/:id", verifyToken, deleteTeam);
+router.put("/:id", updateTeam);
+router.delete("/:id", deleteTeam);
 
 export default router;

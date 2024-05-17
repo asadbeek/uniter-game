@@ -1,25 +1,5 @@
 import prisma from "../lib/prisma.js";
 
-// Create a new team
-
-export const getTeamById = async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    // Use Prisma to team the user with the specified ID
-    const team = await prisma.team.findUniqueOrThrow({
-      where: { id },
-    });
-
-    res.status(200).json({
-      team,
-    });
-  } catch (error) {
-    console.error("Error team user:", error);
-    res.status(500).json({ error: "Internal server error" });
-  }
-};
-
 export const getTeams = async (req, res) => {
   try {
     // Use Prisma to team the user with the specified ID
@@ -34,11 +14,40 @@ export const getTeams = async (req, res) => {
   }
 };
 
+export const getTeamById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Use Prisma to team the user with the specified ID
+    const team = await prisma.team.findUniqueOrThrow({
+      where: { id },
+      include: {
+        creator: {
+          select: {
+            username: true,
+            avatar: true,
+          },
+        },
+      },
+    });
+
+    res.status(200).json({
+      team,
+    });
+  } catch (error) {
+    console.error("Error team user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+// Create a new team
+
 export const createTeam = async (req, res) => {
   const {
     category,
     name,
     img,
+    city,
     numberOfPlayers,
     description,
     availableDaysAndTimes,
@@ -51,6 +60,7 @@ export const createTeam = async (req, res) => {
         category,
         name,
         img,
+        city,
         numberOfPlayers,
         description,
         availableDaysAndTimes,
@@ -70,15 +80,24 @@ export const createTeam = async (req, res) => {
 // Update team details
 export const updateTeam = async (req, res) => {
   const { id } = req.params;
-  const { name, img, numberOfPlayers, description, availableDaysAndTimes } =
-    req.body;
+  const {
+    category,
+    name,
+    img,
+    city,
+    numberOfPlayers,
+    description,
+    availableDaysAndTimes,
+  } = req.body;
 
   try {
     const updatedTeam = await prisma.team.update({
       where: { id },
       data: {
+        category,
         name,
         img,
+        city,
         numberOfPlayers,
         description,
         availableDaysAndTimes,
