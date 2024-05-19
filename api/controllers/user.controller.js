@@ -75,3 +75,15 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+export const profileTeams = async (req, res) => {
+  const tokenUserId = req.params.userId;
+  try {
+    const userTeams = await prisma.team.findMany({
+      where: { userId: tokenUserId },
+    });
+    res.status(200).json(userTeams);
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: "Failed to get profile teams!" });
+  }
+};

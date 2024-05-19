@@ -4,14 +4,16 @@ import {
   updateUser,
   getUser,
   getUsers,
+  profileTeams,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
 router.get("/", getUsers);
-router.get("/:id", verifyToken, getUser);
+// router.get("/:id", verifyToken, getUser);
 router.put("/:id", verifyToken, updateUser);
 router.delete("/:id", verifyToken, deleteUser);
+router.get("/profileTeams", verifyToken, profileTeams);
 
 export default router;

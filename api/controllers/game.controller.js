@@ -1,34 +1,49 @@
 import prisma from "../lib/prisma.js";
-import path from "path";
-import fs from "fs/promises"; // Use fs.promises for async file operations
+
+export const getGames = async (req, res) => {
+  try {
+    const games = await prisma.game.findMany();
+
+    console.log(games);
+
+    res.status(200).json(games);
+  } catch (error) {
+    console.error("Error creating game:", error);
+    res.status(500).json({ error: `Failed to create game: ${error.message}` });
+  }
+};
+
+export const getGameById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const game = await prisma.game.findUniqueOrThrow({
+      where: {
+        id,
+      },
+    });
+
+    console.log(game);
+
+    res.status(200).json(game);
+  } catch (error) {
+    console.error("Error getting game:", error);
+    res.status(500).json({ error: `Failed to getting game: ${error.message}` });
+  }
+};
 
 export const createGame = async (req, res) => {
-  const { category, name, description, creatorId } = req.body;
-  const { file } = req; // Assuming 'file' is the uploaded image file
+  const { category, name, description, image } = req.body;
+  const { adminId } = req.params;
 
   try {
-    let imagePath = null;
-
-    if (file) {
-      // Save the image file to a folder (e.g., 'uploads') and generate a unique filename
-      const uniqueFilename = `${uuidv4()}${path.extname(file.originalname)}`;
-      const uploadPath = path.join(__dirname, "../uploads", uniqueFilename);
-
-      await fs.mkdir(path.dirname(uploadPath), { recursive: true });
-      await fs.writeFile(uploadPath, file.buffer);
-
-      // Set the imagePath to the relative path of the uploaded image
-      imagePath = `/uploads/${uniqueFilename}`;
-    }
-
     // Create the game record in the database including the image path
     const newGame = await prisma.game.create({
       data: {
         category,
         name,
         description,
-        image: imagePath,
-        creatorId,
+        image,
+        creator: { connect: { id: adminId } },
       },
     });
 
@@ -44,7 +59,7 @@ export const createGame = async (req, res) => {
 export const updateGame = async (req, res) => {
   const gameId = req.params.id; // Keep gameId as string
 
-  const { category, name, description } = req.body;
+  const { category, name, description, image } = req.body;
 
   try {
     const game = await prisma.game.update({
@@ -53,6 +68,7 @@ export const updateGame = async (req, res) => {
         category,
         name,
         description,
+        image,
       },
     });
 
