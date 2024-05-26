@@ -1,16 +1,16 @@
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 
-export const generateToken = () => {
-  const age = 1000 * 60 * 60 * 24 * 7;
+// export const generateToken = () => {
+//   const age = 1000 * 60 * 60 * 24 * 7;
 
-  const token = jwt.sign(
-    {
-      id: user.id,
-      isAdmin: true,
-    },
-    process.env.JWT_SECRET_KEY,
-    { expiresIn: age }
-  );
+//   const token = jwt.sign(
+//     {
+//       id: user.id,
+//       isAdmin: true,
+//     },
+//     process.env.JWT_SECRET_KEY,
+//     { expiresIn: age }
+//   );
 
-  return token;
-};
+//   return token;
+// };

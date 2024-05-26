@@ -29,9 +29,9 @@ export const updateUser = async (req, res) => {
   const tokenUserId = req.userId;
   const { password, avatar, ...inputs } = req.body;
 
-  if (id !== tokenUserId) {
-    return res.status(403).json({ message: "Not Authorized!" });
-  }
+  // if (id !== tokenUserId) {
+  //   return res.status(403).json({ message: "Not Authorized!" });
+  // }
 
   let updatedPassword = null;
   try {
@@ -75,6 +75,7 @@ export const deleteUser = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
 export const profileTeams = async (req, res) => {
   const tokenUserId = req.params.userId;
   try {

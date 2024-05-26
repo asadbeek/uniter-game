@@ -32,7 +32,7 @@ export const getGameById = async (req, res) => {
 };
 
 export const createGame = async (req, res) => {
-  const { category, name, description, image } = req.body;
+  const { category, name, description, image, isPublished } = req.body;
   const { adminId } = req.params;
 
   try {
@@ -43,6 +43,7 @@ export const createGame = async (req, res) => {
         name,
         description,
         image,
+        isPublished: Boolean(isPublished),
         creator: { connect: { id: adminId } },
       },
     });
@@ -59,7 +60,7 @@ export const createGame = async (req, res) => {
 export const updateGame = async (req, res) => {
   const gameId = req.params.id; // Keep gameId as string
 
-  const { category, name, description, image } = req.body;
+  const { category, name, description, image, isPublished } = req.body;
 
   try {
     const game = await prisma.game.update({
@@ -68,6 +69,7 @@ export const updateGame = async (req, res) => {
         category,
         name,
         description,
+        isPublished: Boolean(isPublished),
         image,
       },
     });

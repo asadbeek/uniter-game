@@ -16,6 +16,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   teams     Team[]   @relation("team_creator")
+  token Token[]
 }
 
 model Admin {
@@ -39,6 +40,7 @@ model Game {
   updatedAt   DateTime @updatedAt
   creator     Admin    @relation("game_creator", fields: [creatorId], references: [id])
   creatorId   String
+  isPublished Boolean  @default(false)
 }
 
 model Team {
@@ -59,4 +61,15 @@ model Team {
 
   creator               User     @relation("team_creator", fields: [creatorId], references: [id])
   creatorId             String
+}
+
+
+model Token {
+  id         Int      @id @default(autoincrement())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  token String?         @unique
+  expiresAt DateTime
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
 }
