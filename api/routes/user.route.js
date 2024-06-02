@@ -11,9 +11,9 @@ import { verifyToken } from "../middleware/verifyToken.js";
 const router = express.Router();
 
 router.get("/", getUsers);
-router.get("/:id", verifyToken, getUser);
+router.get("/:id", getUser);
 router.put("/:id", updateUser);
 router.delete("/:id", verifyToken, deleteUser);
-router.get("/profileTeams", verifyToken, profileTeams);
+router.get("/profileTeams/:id", profileTeams);
 
 export default router;

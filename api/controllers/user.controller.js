@@ -16,6 +16,9 @@ export const getUser = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { id },
+      include: {
+        teams: true,
+      },
     });
     res.status(200).json(user);
   } catch (err) {
@@ -77,10 +80,10 @@ export const deleteUser = async (req, res) => {
 };
 
 export const profileTeams = async (req, res) => {
-  const tokenUserId = req.params.userId;
+  const { id } = req.params;
   try {
-    const userTeams = await prisma.team.findMany({
-      where: { userId: tokenUserId },
+    const userTeams = await prisma.user.findUniqueOrThrow({
+      where: { id },
     });
     res.status(200).json(userTeams);
   } catch (err) {

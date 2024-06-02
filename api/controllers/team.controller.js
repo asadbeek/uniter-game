@@ -133,3 +133,21 @@ export const deleteTeam = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+export const getTeamsByCategory = async (req, res) => {
+  const { category } = req.params;
+  try {
+    const teams = await prisma.team.findMany({
+      where: {
+        category: {
+          contains: category,
+        },
+      },
+    });
+
+    res.status(200).json(teams);
+  } catch (error) {
+    console.error("Error fetching teams by category:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};

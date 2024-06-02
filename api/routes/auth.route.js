@@ -12,6 +12,6 @@ router.post("/register", register);
 router.post("/login", login);
 router.post("/logout", logout);
 
-router.get("/verify-email/:token", verifyEmail);
+router.get("/verify-email/:tokenId", verifyEmail);
 
 export default router;

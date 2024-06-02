@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma.js";
+import { emailVerification } from "./services/emailService.js";
 
 export const register = async (req, res) => {
   const { username, email, password } = req.body;
@@ -34,6 +35,8 @@ export const register = async (req, res) => {
       },
     });
 
+    emailVerification(newUser, token);
+
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
     console.log(err);
@@ -47,9 +50,16 @@ export const login = async (req, res) => {
   try {
     const user = await prisma.user.findUnique({
       where: { username },
+      include: {
+        teams: true,
+      },
     });
 
     if (!user) return res.status(401).json({ message: "Invalid Credentials!" });
+
+    if (user && !user.isVerified) {
+      return res.status(401).json({ message: "Verify your account!" });
+    }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
@@ -89,19 +99,19 @@ export const logout = (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
-  const { token } = req.params;
+  const { userId, tokenId } = req.params;
 
-  if (!token) {
-    return res.status(400).json({ message: "Invalid token" });
+  if (!tokenId) {
+    return res.status(400).json({ message: "Missing Token" });
   }
 
   try {
     // Verify the token
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(tokenId, process.env.JWT_SECRET_KEY);
 
     // Check if the token exists and is not expired
-    const verificationToken = await prisma.verificationToken.findUnique({
-      where: { token },
+    const verificationToken = await prisma.token.findUnique({
+      where: { token: tokenId },
     });
 
     if (!verificationToken || verificationToken.expiresAt < new Date()) {
@@ -110,13 +120,8 @@ export const verifyEmail = async (req, res) => {
 
     // Update the user's verified status
     await prisma.user.update({
-      where: { id: decoded.userId },
+      where: { id: verificationToken.userId },
       data: { isVerified: true },
-    });
-
-    // Delete the verification token
-    await prisma.verificationToken.delete({
-      where: { token },
     });
 
     res.status(200).json({ message: "Email verified successfully" });
