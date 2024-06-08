@@ -60,6 +60,10 @@ model Team {
   img                   String
   approvedBy            Admin?   @relation("approved_teams", fields: [approvedById], references: [id])
   creator               User     @relation("team_creator", fields: [creatorId], references: [id])
+  
+  matchedId             String?  @unique @default(uuid())
+  matchedTeam           Team?    @relation("matchedTeam", fields: [matchedId], references: [id])
+  matcher               Team[]   @relation("matchedTeam")
 }
 
 model Token {

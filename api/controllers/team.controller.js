@@ -1,4 +1,5 @@
 import prisma from "../lib/prisma.js";
+import { matchService } from "./services/matchService.js";
 
 export const getTeams = async (req, res) => {
   try {
@@ -28,6 +29,8 @@ export const getTeamById = async (req, res) => {
             avatar: true,
           },
         },
+        matchedTeam: true,
+        matcher: true,
       },
     });
 
@@ -148,6 +151,98 @@ export const getTeamsByCategory = async (req, res) => {
     res.status(200).json(teams);
   } catch (error) {
     console.error("Error fetching teams by category:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const matchTeam = async (req, res) => {
+  // sending email
+  const { userId, teamId } = req.params;
+  try {
+    const team = await prisma.team.findUniqueOrThrow({
+      where: {
+        id: teamId,
+      },
+      include: {
+        creator: true,
+      },
+    });
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+      include: {
+        teams: true,
+      },
+    });
+
+    if (!team) {
+      res.status(404).json({ error: "No team found" });
+      return;
+    }
+
+    if (!user) {
+      res.status(404).json({ error: "No user found" });
+    }
+
+    await matchService(user, team?.creator, team);
+
+    res
+      .status(200)
+      .json(
+        `User ${user?.username} vs Opponent ${team.creator?.username} --- game`
+      );
+  } catch (error) {
+    console.error("Error sending email", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+export const approveTeamMatch = async (req, res) => {
+  const { userId, teamId } = req.params;
+  try {
+    const team = await prisma.team.findUniqueOrThrow({
+      where: {
+        id: teamId,
+      },
+      include: {
+        creator: true,
+      },
+    });
+
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        id: userId,
+      },
+      include: {
+        teams: true,
+      },
+    });
+
+    const userTeam = user.teams[0];
+
+    if (!team) {
+      res.status(404).json({ error: "No team found" });
+      return;
+    }
+
+    if (!user) {
+      res.status(404).json({ error: "No user found" });
+    }
+
+    const matcherTeam = await prisma.team.update({
+      where: {
+        id: team.id,
+      },
+      data: {
+        matchedId: userTeam.id,
+      },
+    });
+
+    res.status(200).json(matcherTeam);
+  } catch (error) {
+    console.error("Error Matching team", error);
     res.status(500).json({ error: "Internal server error" });
   }
 };

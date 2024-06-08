@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export const gameMatcher = async (user, opponent) => {
+export const matchService = async (user, opponent, opponentTeam) => {
   let config = {
     host: "smtp.forwardemail.net",
     port: 465,
@@ -149,22 +149,27 @@ export const gameMatcher = async (user, opponent) => {
         </header>
 
         <main style="margin-top: 2rem;">
-            <h2 style="color: #4b5563;">Hi ${user.username},</h2>
+            <h2 style="color: #4b5563;">Hi ${opponent.username},</h2>
 
             <p style="margin-top: 0.5rem; line-height: 1.625; color: #4b5563;">
 							We are glad to see you on our platform.
-							Let's verify your account for  <span class="font-semibold">Uniter</span> by clicking the button below.
+							${user.username} with his team ${user.teams[0].name} is inviting you to play a game. Approve it to have a match.
 						</p>
 
-            <a href="http://localhost:8800/api/" style="padding: 0.5rem 1.5rem; margin-top: 1rem; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.05em; text-transform: capitalize; border: none; border-radius: 0.375rem; background-color: #3b82f6; color: #fff; cursor: pointer; outline: none; transition: background-color 0.3s; text-decoration: none;">Accept the invite</a>
+            <a href="http://localhost:8800/api/team/approve_match_team/${user.id}/${opponentTeam.id}" style="padding: 0.5rem 1.5rem; margin-top: 1rem; font-size: 0.875rem; font-weight: 500; letter-spacing: 0.05em; text-transform: capitalize; border: none; border-radius: 0.375rem; background-color: #3b82f6; color: #fff; cursor: pointer; outline: none; transition: background-color 0.3s; text-decoration: none;">Accept the Match</a>
 
             <p style="margin-top: 2rem; color: #6b7280;">Thanks, <br> Uniter</p>
         </main>
 
         <footer style="margin-top: 2rem; color: #6b7280;">
             <p>
-                This email was sent to <a href="#" target="_blank" style="color: #3b82f6; text-decoration: none;">${user.email}</a>. 
+                This email was sent to <a href="#" target="_blank" style="color: #3b82f6; text-decoration: none;">${opponent.email}</a>. 
             </p>
+
+			<p>
+                Opponent email is<a href="#" target="_blank" style="color: #3b82f6; text-decoration: none;">${user.email}</a>. 
+            </p>
+
 
             <p style="margin-top: 0.375rem;">© <script>document.write(new Date().getFullYear())</script> Match Online. All Rights Reserved.</p>
         </footer>
@@ -175,7 +180,7 @@ export const gameMatcher = async (user, opponent) => {
 
   let message = {
     from: "Uniter",
-    to: user.email,
+    to: opponent.email,
     subject: "Matching",
     text: "You can see your opponent team by clicking to the link",
     html: matchTemplate,
