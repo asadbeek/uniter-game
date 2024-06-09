@@ -23,12 +23,7 @@ export const getTeamById = async (req, res) => {
     const team = await prisma.team.findUniqueOrThrow({
       where: { id },
       include: {
-        creator: {
-          select: {
-            username: true,
-            avatar: true,
-          },
-        },
+        creator: true,
         matchedTeam: true,
         matcher: true,
       },
