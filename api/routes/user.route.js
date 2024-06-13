@@ -4,7 +4,6 @@ import {
   updateUser,
   getUser,
   getUsers,
-  profileTeams,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -14,6 +13,5 @@ router.get("/", getUsers);
 router.get("/:id", getUser);
 router.put("/:id", updateUser);
 router.delete("/:id", verifyToken, deleteUser);
-router.get("/profileTeams/:id", profileTeams);
 
 export default router;

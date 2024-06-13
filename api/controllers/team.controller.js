@@ -150,7 +150,7 @@ export const getTeamsByCategory = async (req, res) => {
   }
 };
 
-export const matchTeam = async (req, res) => {
+export const emailMatchTeam = async (req, res) => {
   // sending email
   const { userId, teamId } = req.params;
   try {
