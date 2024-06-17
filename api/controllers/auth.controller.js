@@ -11,8 +11,6 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    console.log(hashedPassword);
-
     // CREATE A NEW USER AND SAVE TO DB
     const newUser = await prisma.user.create({
       data: {
@@ -22,6 +20,7 @@ export const register = async (req, res) => {
       },
     });
 
+    //token is generated for the new user
     const token = jwt.sign({ userId: newUser.id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1h",
     });
@@ -36,6 +35,7 @@ export const register = async (req, res) => {
     });
 
     emailVerification(newUser, token);
+    // It passes the new user object and the token as arguments.
 
     res.status(201).json({ message: "User created successfully" });
   } catch (err) {
@@ -78,6 +78,8 @@ export const login = async (req, res) => {
     );
 
     const { password: userPassword, ...userInfo } = user;
+    // This line of code is used to separate the password field from the user object
+    // and store the remaining fields in a new object called userInfo.
 
     res
       .cookie("token", token, {
@@ -99,7 +101,7 @@ export const logout = (req, res) => {
 };
 
 export const verifyEmail = async (req, res) => {
-  const { userId, tokenId } = req.params;
+  const { tokenId } = req.params;
 
   if (!tokenId) {
     return res.status(400).json({ message: "Missing Token" });

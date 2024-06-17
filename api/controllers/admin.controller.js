@@ -61,17 +61,14 @@ export const adminLogin = async (req, res) => {
       { expiresIn: age }
     );
 
+    // If credentials are correct, return the admin user
     res
       .cookie("token", token, {
         httpOnly: true,
-        // secure: true,
         maxAge: age,
       })
       .status(200)
       .json(adminUser);
-
-    // If credentials are correct, return the admin user
-    // res.status(200).json({ message: "Login successful", adminUser });
   } catch (error) {
     console.error("Error logging in admin:", error);
     res.status(500).json({ error: "Failed to log in admin" });

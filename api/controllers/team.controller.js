@@ -234,6 +234,7 @@ export const approveTeamMatch = async (req, res) => {
         matchedId: userTeam.id,
       },
     });
+    //This line updates the team with the specified teamId, setting its matchedId field to the ID of the user's team.
 
     res.status(200).json(matcherTeam);
   } catch (error) {
